@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>China 2025 — Trip Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Anybody:ital,wght@0,100;0,400;0,700;0,900;1,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black: #0a0a0a;
+  --white: #f5f2ec;
+  --red: #e8350f;
+  --accent: #c8f060;
+  --muted: #8a8780;
+  --card-bg: #141412;
+  --border: rgba(245,242,236,0.1);
+  --edit-border: rgba(200,240,96,0.4);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { background: var(--black); color: var(--white); font-family: 'DM Sans', sans-serif; font-weight: 300; overflow-x: hidden; }
+
+/* EDIT MODE */
+.edit-mode-banner {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 999;
+  background: var(--accent); color: var(--black);
+  text-align: center; padding: 8px; font-size: 12px; font-weight: 500;
+  display: none; align-items: center; justify-content: center; gap: 12px;
+}
+.edit-mode-banner.visible { display: flex; }
+.edit-mode-banner button {
+  background: var(--black); color: var(--accent);
+  border: none; border-radius: 999px; padding: 4px 12px;
+  font-size: 11px; font-weight: 500; cursor: pointer;
+}
+
+body.editing [contenteditable] {
+  border-bottom: 1px dashed var(--edit-border);
+  outline: none;
+  cursor: text;
+  border-radius: 2px;
+  min-width: 20px;
+  display: inline-block;
+}
+body.editing [contenteditable]:hover { background: rgba(200,240,96,0.05); }
+body.editing [contenteditable]:focus { background: rgba(200,240,96,0.08); border-bottom-color: var(--accent); }
+body.editing .accom-section { border-color: rgba(200,240,96,0.5); }
+
+.edit-toggle {
+  position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 998;
+  width: 48px; height: 48px; border-radius: 50%;
+  background: var(--card-bg); border: 1px solid var(--border);
+  color: var(--muted); font-size: 20px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s; box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
+.edit-toggle:hover { border-color: var(--accent); color: var(--accent); }
+.edit-toggle.active { background: var(--accent); color: var(--black); border-color: var(--accent); }
+
+/* HEADER */
+header { position: relative; min-height: 100vh; display: flex; flex-direction: column; justify-content: flex-end; padding: 3rem; overflow: hidden; }
+.header-bg { position: absolute; inset: 0; background: radial-gradient(ellipse 80% 60% at 70% 40%, rgba(232,53,15,0.18) 0%, transparent 60%), radial-gradient(ellipse 50% 40% at 20% 80%, rgba(200,240,96,0.08) 0%, transparent 50%), var(--black); }
+.header-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(245,242,236,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(245,242,236,0.03) 1px, transparent 1px); background-size: 60px 60px; }
+.trip-tag { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); border: 1px solid var(--accent); padding: 6px 14px; border-radius: 999px; margin-bottom: 2rem; position: relative; }
+.trip-tag::before { content: ''; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: pulse 2s infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.8); } }
+h1 { font-family: 'Anybody', sans-serif; font-size: clamp(4rem, 12vw, 10rem); font-weight: 900; line-height: 0.88; letter-spacing: -0.03em; text-transform: uppercase; position: relative; margin-bottom: 2rem; }
+h1 span.outline { -webkit-text-stroke: 2px var(--white); color: transparent; }
+h1 span.red { color: var(--red); }
+.header-meta { display: flex; gap: 2rem; flex-wrap: wrap; align-items: center; position: relative; }
+.meta-pill { background: rgba(245,242,236,0.07); border: 1px solid var(--border); border-radius: 999px; padding: 8px 18px; font-size: 13px; color: var(--muted); }
+.meta-pill strong { color: var(--white); font-weight: 500; }
+.scroll-hint { position: absolute; bottom: 2.5rem; right: 3rem; display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.scroll-line { width: 1px; height: 60px; background: linear-gradient(var(--muted), transparent); animation: scrollDown 2s ease-in-out infinite; }
+@keyframes scrollDown { 0% { transform: scaleY(0); transform-origin: top; } 50% { transform: scaleY(1); transform-origin: top; } 50.01% { transform: scaleY(1); transform-origin: bottom; } 100% { transform: scaleY(0); transform-origin: bottom; } }
+
+/* NAV */
+nav { position: sticky; top: 0; z-index: 100; background: rgba(10,10,10,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0 3rem; display: flex; align-items: center; overflow-x: auto; scrollbar-width: none; }
+nav::-webkit-scrollbar { display: none; }
+.nav-item { padding: 1rem 1.2rem; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); cursor: pointer; white-space: nowrap; border-bottom: 2px solid transparent; transition: color 0.2s, border-color 0.2s; text-decoration: none; }
+.nav-item:hover { color: var(--white); }
+.nav-item.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* SECTIONS */
+section { padding: 5rem 3rem; }
+.section-label { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--red); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 12px; }
+.section-label::after { content: ''; flex: 1; max-width: 60px; height: 1px; background: var(--red); }
+h2 { font-family: 'Anybody', sans-serif; font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 700; line-height: 1; text-transform: uppercase; letter-spacing: -0.02em; margin-bottom: 3rem; }
+
+/* CITY HEADER with Chinese */
+.city-heading { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; margin-bottom: 3rem; }
+.city-heading h2 { margin-bottom: 0; }
+.city-zh { font-size: clamp(1.5rem, 3vw, 2.2rem); color: var(--red); opacity: 0.7; font-weight: 300; letter-spacing: 0.05em; }
+
+/* MAP */
+#mapa { padding: 5rem 3rem; }
+.map-container { position: relative; width: 100%; height: 520px; border-radius: 16px; overflow: hidden; border: 1px solid var(--border); background: #1a1a18; }
+#svgmap { width: 100%; height: 100%; }
+.map-legend { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 1.5rem; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--muted); }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+/* DAY GRID */
+.days-grid { display: flex; flex-direction: column; }
+.day-row { display: grid; grid-template-columns: 100px 1fr; border-bottom: 1px solid var(--border); transition: background 0.2s; }
+.day-row:hover { background: rgba(245,242,236,0.02); }
+.day-date { padding: 1.5rem 1.5rem 1.5rem 0; border-right: 1px solid var(--border); display: flex; flex-direction: column; justify-content: center; }
+.day-num { font-family: 'Anybody', sans-serif; font-size: 2rem; font-weight: 900; line-height: 1; color: var(--red); }
+.day-month { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+.day-content { padding: 1.5rem; }
+.day-city { font-family: 'Anybody', sans-serif; font-size: 1.3rem; font-weight: 700; text-transform: uppercase; margin-bottom: 0.5rem; }
+.day-city a { color: var(--white); text-decoration: none; transition: color 0.2s; }
+.day-city a:hover { color: var(--accent); }
+.day-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+.dtag { font-size: 10px; padding: 3px 9px; border-radius: 999px; border: 1px solid; letter-spacing: 0.05em; }
+.dtag-nature { color: #7ec44a; border-color: rgba(126,196,74,0.3); }
+.dtag-food { color: #f0a040; border-color: rgba(240,160,64,0.3); }
+.dtag-party { color: #e8604a; border-color: rgba(232,96,74,0.3); }
+.dtag-art { color: #a890f0; border-color: rgba(168,144,240,0.3); }
+.dtag-fashion { color: #f0c0a0; border-color: rgba(240,192,160,0.3); }
+.dtag-culture { color: #60b8f0; border-color: rgba(96,184,240,0.3); }
+
+/* CITY CARDS */
+.cities-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1px; border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+.city-card { background: var(--card-bg); padding: 2rem; transition: background 0.2s; }
+.city-card:hover { background: #1c1c1a; }
+.plan-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.plan-item { display: grid; grid-template-columns: 20px 1fr; gap: 10px; align-items: flex-start; }
+.plan-icon { font-size: 13px; margin-top: 1px; }
+.plan-text { font-size: 13px; line-height: 1.5; }
+.plan-title { font-weight: 500; color: var(--white); }
+.plan-sub { color: var(--muted); font-size: 12px; }
+.city-tip { margin-top: 1.5rem; padding: 12px 14px; background: rgba(245,242,236,0.04); border-left: 2px solid var(--red); border-radius: 0 8px 8px 0; font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+/* ACCOMMODATION SECTION */
+.city-section { padding: 5rem 3rem; border-top: 1px solid var(--border); }
+.accom-section {
+  margin-top: 2rem;
+  border: 1px solid rgba(200,240,96,0.2);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  background: rgba(200,240,96,0.03);
+}
+.accom-header { display: flex; align-items: center; gap: 8px; margin-bottom: 1rem; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
+.accom-fields { display: flex; flex-direction: column; gap: 10px; }
+.accom-field { display: grid; grid-template-columns: 100px 1fr; gap: 12px; align-items: start; }
+.accom-label { font-size: 11px; color: var(--muted); padding-top: 2px; }
+.accom-input {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  color: var(--white);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  padding: 2px 4px;
+  width: 100%;
+  transition: border-color 0.2s;
+  resize: none;
+  min-height: 24px;
+}
+.accom-input:focus { outline: none; border-bottom-color: var(--accent); }
+.accom-input::placeholder { color: rgba(138,135,128,0.5); }
+.accom-saved { font-size: 10px; color: var(--accent); opacity: 0; transition: opacity 0.3s; }
+.accom-saved.show { opacity: 1; }
+
+/* TIPS */
+.tips-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+.tip-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; }
+.tip-emoji { font-size: 1.5rem; margin-bottom: 1rem; display: block; }
+.tip-title { font-size: 14px; font-weight: 500; margin-bottom: 6px; }
+.tip-body { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+/* FOOTER */
+footer { padding: 4rem 3rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+.footer-title { font-family: 'Anybody', sans-serif; font-size: 1.5rem; font-weight: 900; text-transform: uppercase; }
+.footer-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+.share-btn { display: inline-flex; align-items: center; gap: 8px; background: var(--accent); color: var(--black); font-weight: 500; font-size: 13px; padding: 10px 22px; border-radius: 999px; border: none; cursor: pointer; transition: transform 0.15s, opacity 0.15s; }
+.share-btn:hover { transform: scale(1.03); opacity: 0.9; }
+
+@media (max-width: 600px) {
+  header, section, nav, .city-section, #mapa { padding-left: 1.2rem; padding-right: 1.2rem; }
+  .day-row { grid-template-columns: 70px 1fr; }
+  .cities-grid { grid-template-columns: 1fr; }
+  h1 { font-size: 4rem; }
+  footer { flex-direction: column; }
+  .accom-field { grid-template-columns: 1fr; gap: 4px; }
+}
+</style>
+</head>
+<body>
+
+<!-- EDIT MODE BANNER -->
+<div class="edit-mode-banner" id="editBanner">
+  ✏️ Modo edición activo — los cambios se guardan automáticamente
+  <button onclick="toggleEdit()">Salir</button>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-bg"></div>
+  <div class="header-grid"></div>
+  <div class="trip-tag">Trip · Juliol–Agost 2025</div>
+  <h1><span class="red">Chi</span><span class="outline">na</span><br><span>2025</span></h1>
+  <div class="header-meta">
+    <div class="meta-pill">✈ <strong>6</strong> persones</div>
+    <div class="meta-pill">📅 <strong>19</strong> dies</div>
+    <div class="meta-pill">🏙 <strong>9</strong> ciutats</div>
+    <div class="meta-pill">🗓 <strong>17 jul → 4 ago</strong></div>
+  </div>
+  <div class="scroll-hint"><span>Scroll</span><div class="scroll-line"></div></div>
+</header>
+
+<!-- NAV -->
+<nav id="mainnav">
+  <a class="nav-item" href="#mapa">Mapa</a>
+  <a class="nav-item" href="#itinerari">Itinerari</a>
+  <a class="nav-item" href="#guangzhou">Guangzhou</a>
+  <a class="nav-item" href="#yangshuo">Yangshuo</a>
+  <a class="nav-item" href="#longji">Longji</a>
+  <a class="nav-item" href="#kaili">Kaili</a>
+  <a class="nav-item" href="#kunming">Kunming</a>
+  <a class="nav-item" href="#yunnan">Yunnan</a>
+  <a class="nav-item" href="#chengdu">Chengdu</a>
+  <a class="nav-item" href="#chongqing">Chongqing</a>
+  <a class="nav-item" href="#shanghai">Shanghai</a>
+  <a class="nav-item" href="#tips">Consells</a>
+</nav>
+
+<!-- MAP -->
+<section id="mapa">
+  <div class="section-label">Ruta</div>
+  <h2>El recorregut</h2>
+  <div class="map-container">
+    <svg id="svgmap" viewBox="0 0 900 520" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="rgba(232,53,15,0.6)"/></marker>
+        <filter id="glow"><feGaussianBlur stdDeviation="3" result="cb"/><feMerge><feMergeNode in="cb"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <rect width="900" height="520" fill="#111110"/>
+      <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1"/></pattern>
+      <rect width="900" height="520" fill="url(#grid)"/>
+      <path d="M 180,60 L 220,55 L 280,50 L 340,48 L 400,52 L 450,48 L 500,55 L 540,60 L 570,80 L 590,100 L 600,130 L 610,160 L 620,190 L 630,220 L 640,250 L 650,280 L 660,310 L 670,340 L 660,370 L 640,390 L 620,405 L 600,415 L 570,420 L 540,425 L 510,430 L 480,440 L 450,450 L 420,445 L 390,440 L 360,430 L 330,420 L 300,410 L 270,400 L 240,385 L 210,370 L 185,350 L 165,320 L 155,285 L 150,250 L 155,215 L 160,180 L 165,145 L 170,110 L 175,80 Z" fill="rgba(232,53,15,0.06)" stroke="rgba(232,53,15,0.2)" stroke-width="1.5"/>
+      <line x1="530" y1="370" x2="465" y2="340" stroke="rgba(232,53,15,0.5)" stroke-width="1.5" stroke-dasharray="4,4" marker-end="url(#arr)"/>
+      <line x1="460" y1="335" x2="445" y2="310" stroke="rgba(232,53,15,0.5)" stroke-width="1.5" stroke-dasharray="4,4" marker-end="url(#arr)"/>
+      <line x1="440" y1="305" x2="412" y2="305" stroke="rgba(232,53,15,0.5)" stroke-width="1.5" stroke-dasharray="4,4" marker-end="url(#arr)"/>
+      <line x1="405" y1="302" x2="370" y2="318" stroke="rgba(232,53,15,0.5)" stroke-width="1.5" stroke-dasharray="4,4" marker-end="url(#arr)"/>
+      <line x1="362" y1="314" x2="322" y2="270" stroke="rgba(232,53,15,0.5)" stroke-width="1.5" stroke-dasharray="4,4" marker-end="url(#arr)"/>
+      <line x1="318" y1="265" x2="380" y2="235" stroke="rgba(232,53,15,0.5)" stroke-width="1.5" stroke-dasharray="4,4" marker-end="url(#arr)"/>
+      <line x1="388" y1="232" x2="430" y2="248" stroke="rgba(232,53,15,0.5)" stroke-width="1.5" stroke-dasharray="4,4" marker-end="url(#arr)"/>
+      <line x1="435" y1="245" x2="563" y2="248" stroke="rgba(232,53,15,0.5)" stroke-width="1.5" stroke-dasharray="4,4" marker-end="url(#arr)"/>
+      <line x1="568" y1="252" x2="537" y2="368" stroke="rgba(200,240,96,0.4)" stroke-width="1.5" stroke-dasharray="2,6" marker-end="url(#arr)"/>
+      <g filter="url(#glow)"><circle cx="534" cy="372" r="8" fill="rgba(232,53,15,0.3)" stroke="#e8350f" stroke-width="2"/><circle cx="534" cy="372" r="3" fill="#e8350f"/></g>
+      <text x="548" y="368" fill="#f5f2ec" font-size="11" font-family="DM Sans,sans-serif" font-weight="500">Guangzhou 广州</text>
+      <text x="548" y="381" fill="#8a8780" font-size="9" font-family="DM Sans,sans-serif">17 jul / 4 ago</text>
+      <circle cx="462" cy="338" r="6" fill="rgba(126,196,74,0.2)" stroke="#7ec44a" stroke-width="1.5"/><circle cx="462" cy="338" r="3" fill="#7ec44a"/>
+      <text x="472" y="334" fill="#f5f2ec" font-size="11" font-family="DM Sans,sans-serif" font-weight="500">Yangshuo 阳朔</text>
+      <text x="472" y="347" fill="#8a8780" font-size="9" font-family="DM Sans,sans-serif">18–19 jul</text>
+      <circle cx="443" cy="308" r="5" fill="rgba(126,196,74,0.2)" stroke="#7ec44a" stroke-width="1.5"/><circle cx="443" cy="308" r="2.5" fill="#7ec44a"/>
+      <text x="437" y="298" fill="#f5f2ec" font-size="10" font-family="DM Sans,sans-serif" font-weight="500" text-anchor="middle">龙脊</text>
+      <circle cx="408" cy="304" r="5" fill="rgba(240,160,64,0.2)" stroke="#f0a040" stroke-width="1.5"/><circle cx="408" cy="304" r="2.5" fill="#f0a040"/>
+      <text x="396" y="296" fill="#f5f2ec" font-size="10" font-family="DM Sans,sans-serif" font-weight="500" text-anchor="end">凯里</text>
+      <circle cx="365" cy="320" r="6" fill="rgba(96,184,240,0.2)" stroke="#60b8f0" stroke-width="1.5"/><circle cx="365" cy="320" r="3" fill="#60b8f0"/>
+      <text x="352" y="316" fill="#f5f2ec" font-size="11" font-family="DM Sans,sans-serif" font-weight="500" text-anchor="end">Kunming 昆明</text>
+      <text x="352" y="329" fill="#8a8780" font-size="9" font-family="DM Sans,sans-serif" text-anchor="end">22 jul</text>
+      <circle cx="318" cy="268" r="6" fill="rgba(126,196,74,0.2)" stroke="#7ec44a" stroke-width="1.5"/><circle cx="318" cy="268" r="3" fill="#7ec44a"/>
+      <text x="305" y="264" fill="#f5f2ec" font-size="11" font-family="DM Sans,sans-serif" font-weight="500" text-anchor="end">Lijiang 丽江</text>
+      <text x="305" y="277" fill="#8a8780" font-size="9" font-family="DM Sans,sans-serif" text-anchor="end">23–25 jul</text>
+      <circle cx="298" cy="238" r="4" fill="rgba(168,144,240,0.2)" stroke="#a890f0" stroke-width="1.5"/><circle cx="298" cy="238" r="2" fill="#a890f0"/>
+      <text x="286" y="234" fill="#a890f0" font-size="10" font-family="DM Sans,sans-serif" text-anchor="end">香格里拉</text>
+      <g filter="url(#glow)"><circle cx="383" cy="234" r="7" fill="rgba(232,53,15,0.2)" stroke="#e8350f" stroke-width="2"/><circle cx="383" cy="234" r="3" fill="#e8350f"/></g>
+      <text x="393" y="230" fill="#f5f2ec" font-size="11" font-family="DM Sans,sans-serif" font-weight="500">Chengdu 成都</text>
+      <text x="393" y="243" fill="#8a8780" font-size="9" font-family="DM Sans,sans-serif">26–28 jul</text>
+      <circle cx="432" cy="248" r="6" fill="rgba(168,144,240,0.2)" stroke="#a890f0" stroke-width="1.5"/><circle cx="432" cy="248" r="3" fill="#a890f0"/>
+      <text x="435" y="237" fill="#f5f2ec" font-size="10" font-family="DM Sans,sans-serif" font-weight="500">重庆</text>
+      <g filter="url(#glow)"><circle cx="572" cy="248" r="8" fill="rgba(232,53,15,0.3)" stroke="#e8350f" stroke-width="2"/><circle cx="572" cy="248" r="3" fill="#e8350f"/></g>
+      <text x="582" y="244" fill="#f5f2ec" font-size="11" font-family="DM Sans,sans-serif" font-weight="500">Shanghai 上海</text>
+      <text x="582" y="257" fill="#8a8780" font-size="9" font-family="DM Sans,sans-serif">1–3 ago</text>
+      <text x="20" y="30" fill="#e8350f" font-size="10" font-family="DM Sans,sans-serif" font-weight="500" letter-spacing="0.15em">CHINA 2025 — RUTA</text>
+    </svg>
+  </div>
+  <div class="map-legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#e8350f"></div> Punt principal</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#7ec44a"></div> Naturalesa</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#f0a040"></div> Cultura</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#a890f0"></div> Ciutat</div>
+  </div>
+</section>
+
+<!-- ITINERARY -->
+<section id="itinerari">
+  <div class="section-label">Dia a dia</div>
+  <h2>Itinerari</h2>
+  <div class="days-grid">
+    <div class="day-row"><div class="day-date"><div class="day-num">17</div><div class="day-month">Jul</div></div><div class="day-content"><div class="day-city"><a href="#guangzhou">Guangzhou 广州</a></div><div class="day-tags"><span class="dtag dtag-food">gastronomia</span><span class="dtag dtag-culture">cultura</span></div></div></div>
+    <div class="day-row"><div class="day-date"><div class="day-num">18</div><div class="day-month">Jul</div></div><div class="day-content"><div class="day-city"><a href="#yangshuo">Yangshuo 阳朔</a></div><div class="day-tags"><span class="dtag dtag-nature">naturalesa</span><span class="dtag dtag-food">gastronomia</span></div></div></div>
+    <div class="day-row"><div class="day-date"><div class="day-num">19</div><div class="day-month">Jul</div></div><div class="day-content"><div class="day-city"><a href="#yangshuo">Yangshuo 阳朔</a></div><div class="day-tags"><span class="dtag dtag-nature">naturalesa</span><span class="dtag dtag-party">nit social</span></div></div></div>
+    <div class="day-row"><div class="day-date"><div class="day-num">20</div><div class="day-month">Jul</div></div><div class="day-content"><div class="day-city"><a href="#longji">Longji 龙脊</a></div><div class="day-tags"><span class="dtag dtag-nature">naturalesa</span><span class="dtag dtag-culture">cultura</span></div></div></div>
+    <div class="day-row"><div class="day-date"><div class="day-num">21</div><div class="day-month">Jul</div></div><div class="day-content"><div class="day-city"><a href="#kaili">Kaili / Xijiang 凯里</a></div><div class="day-tags"><span class="dtag dtag-culture">cultura Miao</span><span class="dtag dtag-fashion">artesania</span></div></div></div>
+    <div class="day-row"><div class="day-date"><div class="day-num">22</div><div class="day-month">Jul</div></div><div class="day-content"><div class="day-city"><a href="#kunming">Kunming 昆明</a></div><div class="day-tags"><span class="dtag dtag-food">bolets Yunnan</span><span class="dtag dtag-art">art</span></div></div></div>
+    <div class="day-row"><div class="day-date"><div class="day-num">23</div><div class="day-month">Jul</div></div><div class="day-content"><div class="day-city"><a href="#yunnan">Lijiang / Dali 丽江</a></div><div class="day-tags"><span class="dtag dtag-nature">naturalesa</span><span class="dtag dtag-culture">naxi</span></div></div></div>
+    <div class="day-row"><div class="day-date"><div class="day-num">24</div><div class="day-month">Jul</div></div><div class="day-content"><div class="day-city"><a href="#yunnan">Lijiang / Shangri-La 香格里拉</a></div><div class="day-tags"><span class="dtag dtag-nature">Tiger Leaping Gorge</span></div></div></div>
+    <div class="day-row"><div class="day-date"><div class="day-num">25</div><div class="day-month">Jul</div></div><div class="day-content"><div class="day-city"><a href="#yunnan">Shangri-La 香格里拉</a></div><div class="day-tags"><span class="dtag dtag-culture">tibetà</span><span class="dtag dtag-food">yak</span></div></div></div>
+    <div class="day-row"><div class="day-date"><div class="day-num">26</div><div class="day-month">Jul</div></div><div class="day-content"><div class="day-city"><a href="#chengdu">Chengdu 成都</a></div><div class="day-tags"><span class="dtag dtag-nature">pandas!</span><span class="dtag dtag-food">hot pot</span></div></div></div>
+    <div class="day-row"><div class="day-date"><div class="day-num">27</div><div class="day-month">Jul</div></div><div class="day-content"><div class="day-city"><a href="#chengdu">Chengdu 成都</a></div><div class="day-tags"><span class="dtag dtag-art">Taikoo Li</span><span class="dtag dtag-fashion">moda indie</span></div></div></div>
+    <div class="day-row"><div class="day-date"><div class="day-num">28</div><div class="day-month">Jul</div></div><div class="day-content"><div class="day-city"><a href="#chengdu">Chengdu 成都</a></div><div class="day-tags"><span class="dtag dtag-party">techno underground</span></div></div></div>
+    <div class="day-row"><div class="day-date"><div class="day-num">29</div><div class="day-month">Jul</div></div><div class="day-content"><div class="day-city"><a href="#chongqing">Chongqing 重庆</a></div><div class="day-tags"><span class="dtag dtag-culture">cyberpunk city</span><span class="dtag dtag-food">hot pot</span></div></div></div>
+    <div class="day-row"><div class="day-date"><div class="day-num">30</div><div class="day-month">Jul</div></div><div class="day-content"><div class="day-city"><a href="#chongqing">Chongqing 重庆</a></div><div class="day-tags"><span class="dtag dtag-art">Hongya Cave</span><span class="dtag dtag-party">nit</span></div></div></div>
+    <div class="day-row"><div class="day-date"><div class="day-num">31</div><div class="day-month">Jul</div></div><div class="day-content"><div class="day-city"><a href="#chongqing">Chongqing 重庆</a></div><div class="day-tags"><span class="dtag dtag-culture">metro dins edifici</span></div></div></div>
+    <div class="day-row"><div class="day-date"><div class="day-num">01</div><div class="day-month">Ago</div></div><div class="day-content"><div class="day-city"><a href="#shanghai">Shanghai 上海</a></div><div class="day-tags"><span class="dtag dtag-art">M50</span><span class="dtag dtag-fashion">Tianzifang</span></div></div></div>
+    <div class="day-row"><div class="day-date"><div class="day-num">02</div><div class="day-month">Ago</div></div><div class="day-content"><div class="day-city"><a href="#shanghai">Shanghai 上海</a></div><div class="day-tags"><span class="dtag dtag-party">clubs techno</span><span class="dtag dtag-food">dumplings</span></div></div></div>
+    <div class="day-row"><div class="day-date"><div class="day-num">03</div><div class="day-month">Ago</div></div><div class="day-content"><div class="day-city"><a href="#shanghai">Shanghai 上海</a></div><div class="day-tags"><span class="dtag dtag-party">última nit</span><span class="dtag dtag-culture">The Bund</span></div></div></div>
+    <div class="day-row"><div class="day-date"><div class="day-num">04</div><div class="day-month">Ago</div></div><div class="day-content"><div class="day-city"><a href="#guangzhou">Guangzhou — sortida 广州</a></div><div class="day-tags"><span class="dtag dtag-food">últim dim sum</span></div></div></div>
+  </div>
+</section>
+
+<!-- CITY SECTIONS -->
+<div id="guangzhou" class="city-section">
+  <div class="section-label">17 jul / 4 ago</div>
+  <div class="city-heading"><h2>Guangzhou</h2><span class="city-zh">广州</span></div>
+  <div class="cities-grid" style="grid-template-columns:1fr">
+    <div class="city-card">
+      <ul class="plan-list">
+        <li class="plan-item"><span class="plan-icon">🥟</span><div class="plan-text"><div class="plan-title" contenteditable="false">Dim sum matinal a l'Equal Excellent</div><div class="plan-sub" contenteditable="false">El millor dim sum de la Xina, cua des de les 7am — val cada minut d'espera</div></div></li>
+        <li class="plan-item"><span class="plan-icon">🧵</span><div class="plan-text"><div class="plan-title" contenteditable="false">Barri de Haizhu / Liwan — moda i tèxtil local</div><div class="plan-sub" contenteditable="false">Tallers de roba i botigues indie, districte tèxtil real, res de turístic</div></div></li>
+        <li class="plan-item"><span class="plan-icon">🎵</span><div class="plan-text"><div class="plan-title" contenteditable="false">OIL Club — techno underground</div><div class="plan-sub" contenteditable="false">Una de les millors escenes de club del sud de la Xina, ambient 100% local</div></div></li>
+        <li class="plan-item"><span class="plan-icon">🏭</span><div class="plan-text"><div class="plan-title" contenteditable="false">TIT Creative Park</div><div class="plan-sub" contenteditable="false">Antigues fàbriques reconvertides en espais de disseny, galeries i cafès cool</div></div></li>
+        <li class="plan-item"><span class="plan-icon">🌃</span><div class="plan-text"><div class="plan-title" contenteditable="false">Skyline futurista de Zhujiang New Town</div><div class="plan-sub" contenteditable="false">De nit és espectacular — una de les zones urbanes més modernes d'Àsia</div></div></li>
+      </ul>
+      <div class="city-tip" contenteditable="false">💡 Guangzhou és la capital indiscutible del menjar cantonès — menjeu absolutament tot. De nit, Zhujiang New Town sembla un escenari de ciència ficció.</div>
+    </div>
+  </div>
+  <div class="accom-section" id="accom-guangzhou">
+    <div class="accom-header">🏨 Allotjament</div>
+    <div class="accom-fields">
+      <div class="accom-field"><span class="accom-label">Hotel / Airbnb</span><textarea class="accom-input" rows="1" placeholder="Nom de l'allotjament..." data-city="guangzhou" data-field="name" oninput="autoResize(this); saveAccom(this)"></textarea></div>
+      <div class="accom-field"><span class="accom-label">Adreça</span><textarea class="accom-input" rows="1" placeholder="Adreça o Google Maps link..." data-city="guangzhou" data-field="address" oninput="autoResize(this); saveAccom(this)"></textarea></div>
+      <div class="accom-field"><span class="accom-label">Check-in</span><textarea class="accom-input" rows="1" placeholder="Hora d'entrada..." data-city="guangzhou" data-field="checkin" oninput="autoResize(this); saveAccom(this)"></textarea></div>
+      <div class="accom-field"><span class="accom-label">Notes</span><textarea class="accom-input" rows="2" placeholder="Codi de la porta, wifi, aparcament..." data-city="guangzhou" data-field="notes" oninput="autoResize(this); saveAccom(this)"></textarea></div>
+    </div>
+    <div class="accom-saved" id="saved-guangzhou">✓ Desat</div>
+  </div>
+</div>
+
+<div id="yangshuo" class="city-section">
+  <div class="section-label">18–19 jul</div>
+  <div class="city-heading"><h2>Yangshuo</h2><span class="city-zh">阳朔</span></div>
+  <div class="cities-grid" style="grid-template-columns:1fr">
+    <div class="city-card">
+      <ul class="plan-list">
+        <li class="plan-item"><span class="plan-icon">🚲</span><div class="plan-text"><div class="plan-title" contenteditable="false">Ruta en bici pels camps de bambú i arròs</div><div class="plan-sub" contenteditable="false">2h des de West Street fins a Moon Hill — millor a l'alba o capvespre</div></div></li>
+        <li class="plan-item"><span class="plan-icon">🛶</span><div class="plan-text"><div class="plan-title" contenteditable="false">Kayak pel riu Yulong</div><div class="plan-sub" contenteditable="false">Millor que el Li River — menys turistes, paisatge de karst absolutament brutal</div></div></li>
+        <li class="plan-item"><span class="plan-icon">🧗</span><div class="plan-text"><div class="plan-title" contenteditable="false">Escalada a Moon Hill o White Mountain</div><div class="plan-sub" contenteditable="false">Zona d'escalada de roca calcària de nivell mundial amb instructors locals</div></div></li>
+        <li class="plan-item"><span class="plan-icon">🍺</span><div class="plan-text"><div class="plan-title" contenteditable="false">Market Food Street — menjar i cervesa barata</div><div class="plan-sub" contenteditable="false">Beer fish local, baozi, socialitzar amb backpackers de tot el món</div></div></li>
+        <li class="plan-item"><span class="plan-icon">✨</span><div class="plan-text"><div class="plan-title" contenteditable="false">Impressions Liu Sanjie (show de Zhang Yimou)</div><div class="plan-sub" contenteditable="false">Espectacle nocturn únic al món amb 600 actors al riu — reserveu amb antelació</div></div></li>
+      </ul>
+      <div class="city-tip" contenteditable="false">💡 Eviteu West Street de dia (turístic extrem). La màgia és a l'alba en bici pels pobles interiors i de nit al riu.</div>
+    </div>
+  </div>
+  <div class="accom-section" id="accom-yangshuo">
+    <div class="accom-header">🏨 Allotjament</div>
+    <div class="accom-fields">
+      <div class="accom-field"><span class="accom-label">Hotel / Airbnb</span><textarea class="accom-input" rows="1" placeholder="Nom de l'allotjament..." data-city="yangshuo" data-field="name" oninput="autoResize(this); saveAccom(this)"></textarea></div>
+      <div class="accom-field"><span class="accom-label">Adreça</span><textarea class="accom-input" rows="1" placeholder="Adreça o Google Maps link..." data-city="yangshuo" data-field="address" oninput="autoResize(this); saveAccom(this)"></textarea></div>
+      <div class="accom-field"><span class="accom-label">Check-in</span><textarea class="accom-input" rows="1" placeholder="Hora d'entrada..." data-city="yangshuo" data-field="checkin" oninput="autoResize(this); saveAccom(this)"></textarea></div>
+      <div class="accom-field"><span class="accom-label">Notes</span><textarea class="accom-input" rows="2" placeholder="Codi de la porta, wifi, aparcament..." data-city="yangshuo" data-field="notes" oninput="autoResize(this); saveAccom(this)"></textarea></div>
+    </div>
+    <div class="accom-saved" id="saved-yangshuo">✓ Desat</div>
+  </div>
+</div>
+
+<div id="longji" class="city-section">
+  <div class="section-label">20 jul</div>
+  <div class="city-heading"><h2>Longji</h2><span class="city-zh">龙脊梯田</span></div>
+  <div class="cities-grid" style="grid-template-columns:1fr">
+    <div class="city-card">
+      <ul class="plan-list">
+        <li class="plan-item"><span class="plan-icon">🌄</span><div class="plan-text"><div class="plan-title" contenteditable="false">Sortida de sol des del mirador Qilicai</div><div class="plan-sub" contenteditable="false">Sortiu a les 5:30am — les terrasses en boira matinal és una imatge màgica</div></div></li>
+        <li class="plan-item"><span class="plan-icon">🥾</span><div class="plan-text"><div class="plan-title" contenteditable="false">Senderisme Ping'an → Dazhai</div><div class="plan-sub" contenteditable="false">Entre pobles Zhuang i Yao, 3-4h — paisatge absolutament espectacular</div></div></li>
+        <li class="plan-item"><span class="plan-icon">👘</span><div class="plan-text"><div class="plan-title" contenteditable="false">Tèxtils artesanals Yao — dones de cabell llarg</div><div class="plan-sub" contenteditable="false">Compreu directament als pobles, preus locals i peces úniques</div></div></li>
+        <li class="plan-item"><span class="plan-icon">🍚</span><div class="plan-text"><div class="plan-title" contenteditable="false">Arròs cuit en bambú i porc fumat</div><div class="plan-sub" contenteditable="false">Menjeu als hostals dels pobles — autèntic, barat i increïble</div></div></li>
+      </ul>
+      <div class="city-tip" contenteditable="false">💡 Dormiu al poble de Ping'an o Dazhai (no a baix) per viure l'atmosfera sense les masses turístiques del dia.</div>
+    </div>
+  </div>
+  <div class="accom-section" id="accom-longji">
+    <div class="accom-header">🏨 Allotjament</div>
+    <div class="accom-fields">
+      <div class="accom-field"><span class="accom-label">Hotel / Hostal</span><textarea class="accom-input" rows="1" placeholder="Nom de l'allotjament..." data-city="longji" data-field="name" oninput="autoResize(this); saveAccom(this)"></textarea></div>
+      <div class="accom-field"><span class="accom-label">Adreça</span><textarea class="accom-input" rows="1" placeholder="Adreça o Google Maps link..." data-city="longji" data-field="address" oninput="autoResize(this); saveAccom(this)"></textarea></div>
+      <div class="accom-field"><span class="accom-label">Check-in</span><textarea class="accom-input" rows="1" placeholder="Hora d'entrada..." data-city="longji" data-field="checkin" oninput="autoResize(this); saveAccom(this)"></textarea></div>
+      <div class="accom-field"><span class="accom-label">Notes</span><textarea class="accom-input" rows="2" placeholder="Codi de la porta, wifi, aparcament..." data-city="longji" data-field="notes" oninput="autoResize(this); saveAccom(this)"></textarea></div>
+    </div>
+    <div class="accom-saved" id="saved-longji">✓ Desat</div>
+  </div>
+</div>
+
+<div id="kaili" class="city-section">
+  <div class="section-label">21 jul</div>
+  <div class="city-heading"><h2>Kaili / Xijiang</h2><span class="city-zh">凯里 · 西江</span></div>
+  <div class="cities-grid" style="grid-template-columns:1fr">
+    <div class="city-card">
+      <ul class="plan-list">
+        <li class="plan-item"><span class="plan-icon">🏘</span><div class="plan-text"><div class="plan-title" contenteditable="false">Xijiang — el poble Miao més gran del món</div><div class="plan-sub" contenteditable="false">1.200 cases de fusta en terrasses, completament autèntic i fotogràfic</div></div></li>
+        <li class="plan-item"><span class="plan-icon">🪡</span><div class="plan-text"><div class="plan-title" contenteditable="false">Brodats i bijuteria d'argent Miao</div><div class="plan-sub" contenteditable="false">Els millors tèxtils artesanals de la Xina — únics i molt barats aquí</div></div></li>
+        <li class="plan-item"><span class="plan-icon">🥁</span><div class="plan-text"><div class="plan-title" contenteditable="false">Danses i música Miao al capvespre</div><div class="plan-sub" contenteditable="false">Espectacles autèntics a la plaça central — no és un show turístic qualsevol</div></div></li>
+        <li class="plan-item"><span class="plan-icon">🌶</span><div class="plan-text"><div class="plan-title" contenteditable="false">Sopa àcida Miao i arròs enganxós amb carn</div><div class="plan-sub" contenteditable="false">Gastronomia completament diferent — molt picant, molt bona</div></div></li>
+      </ul>
+      <div class="city-tip" contenteditable="false">💡 Kaili és el hub logístic — Xijiang és a 1h en bus. Aneu directe a Xijiang i no perdeu l'hora daurada a les terrasses.</div>
+    </div>
+  </div>
+  <div class="accom-section" id="accom-kaili">
+    <div class="accom-header">🏨 Allotjament</div>
+    <div class="accom-fields">
+      <div class="accom-field"><span class="accom-label">Hotel / Hostal</span><textarea class="accom-input" rows="1" placeholder="Nom de l'allotjament..." data-city="kaili" data-field="name" oninput="autoResize(this); saveAccom(this)"></textarea></div>
+      <div class="accom-field"><span class="accom-label">Adreça</span><textarea class="accom-input" rows="1" placeholder="Adreça o Google Maps link..." data-city="kaili" data-field="address" oninput="autoResize(this); saveAccom(this)"></textarea></div>
+      <div class="accom-field"><span class="accom-label">Check-in</span><textarea class="accom-input" rows="1" placeholder="Hora d'entrada..." data-city="kaili" data-field="checkin" oninput="autoResize(this); saveAccom(this)"></textarea></div>
+      <div class="accom-field"><span class="accom-label">Notes</span><textarea class="accom-input" rows="2" placeholder="Codi de la porta, wifi, aparcament..." data-city="kaili" data-field="notes" oninput="autoResize(this); saveAccom(this)"></textarea></div>
+    </div>
+    <div class="accom-saved" id="saved-kaili">✓ Desat</div>
+  </div>
+</div>
+
+<div id="kunming" class="city-section">
+  <div class="section-label">22 jul</div>
+  <div class="city-heading"><h2>Kunming</h2><span class="city-zh">昆明</span></div>
+  <div class="cities-grid" style="grid-template-columns:1fr">
+    <div class="city-card">
+      <ul class="plan-list">
+        <li class="plan-item"><span class="plan-icon">🏭</span><div class="plan-text"><div class="plan-title" contenteditable="false">1919 Art & Design Park</div><div class="plan-sub" contenteditable="false">Fàbriques reconvertides amb galeries, cafès i espais de disseny</div></div></li>
+        <li class="plan-item"><span class="plan-icon">🛍</span><div class="plan-text"><div class="plan-title" contenteditable="false">Wenlin Jie — carrer dels creatius locals</div><div class="plan-sub" contenteditable="false">Botigues de dissenyadors Yunnan, vintage i independent — el vostre rollo</div></div></li>
+        <li class="plan-item"><span class="plan-icon">🍄</span><div class="plan-text"><div class="plan-title" contenteditable="false">Pot-au-feu de bolets salvatges de Yunnan</div><div class="plan-sub" contenteditable="false">Gastronomia única de temporada — restaurants de bolets imprescindibles</div></div></li>
+        <li class="plan-item"><span class="plan-icon">🎸</span><div class="plan-text"><div class="plan-title" contenteditable="false">Escena de música en directe a Nanping Jie</div><div class="plan-sub" contenteditable="false">Bars amb indie rock xinès en directe, molt locals i molt bons</div></div></li>
+      </ul>
+      <div class="city-tip" contenteditable="false">💡 Kunming és la Ciutat Eterna de la Primavera — clima perfecte. La nit de bolets és obligatòria, és una experiència completament diferent.</div>
+    </div>
+  </div>
+  <div class="accom-section" id="accom-kunming">
+    <div class="accom-header">🏨 Allotjament</div>
+    <div class="accom-fields">
+      <div class="accom-field"><span class="accom-label">Hotel / Airbnb</span><textarea class="accom-input" rows="1" placeholder="Nom de l'allotjament..." data-city="kunming" data-field="name" oninput="autoResize(this); saveAccom(this)"></textarea></div>
+      <div class="accom-field"><span class="accom-label">Adreça</span><textarea class="accom-input" rows="1" placeholder="Adreça o Google Maps link..." data-city="kunming" data-field="address" oninput="autoResize(this); saveAccom(this)"></textarea></div>
+      <div class="accom-field"><span class="accom-label">Check-in</span><textarea class="accom-input" rows="1" placeholder="Hora d'entrada..." data-city="kunming" data-field="checkin" oninput="autoResize(this); saveAccom(this)"></textarea></div>
+      <div class="accom-field"><span class="accom-label">Notes</span><textarea class="accom-input" rows="2" placeholder="Codi de la porta, wifi, aparcament..." data-city="kunming" data-field="notes" oninput="autoResize(this); saveAccom(this)"></textarea></div>
+    </div>
+    <div class="accom-saved" id="saved-kunming">✓ Desat</div>
+  </div>
+</div>
+
+<div id="yunnan" class="city-section">
+  <div class="section-label">23–25 jul</div>
+  <div class="city-heading"><h2>Lijiang · Dali · Shangri-La</h2><span class="city-zh">丽江 · 大理 · 香格里拉</span></div>
+  <div class="cities-grid">
+    <div class="city-card">
+      <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:1rem">Lijiang 丽江</div>
+      <ul class="plan-list">
+        <li class="plan-item"><span class="plan-icon">🏘</span><div class="plan-text"><div class="plan-title" contenteditable="false">Old Town Naxi — arquitectura única</div><div class="plan-sub" contenteditable="false">Canals, ponts de pedra i teules de pissarra — Patrimoni UNESCO</div></div></li>
+        <li class="plan-item"><span class="plan-icon">🍻</span><div class="plan-text"><div class="plan-title" contenteditable="false">Carrer de bars Jiuyi de nit</div><div class="plan-sub" contenteditable="false">Ambient local-turista molt social, karaoke, música en directe</div></div></li>
+        <li class="plan-item"><span class="plan-icon">💍</span><div class="plan-text"><div class="plan-title" contenteditable="false">Joies de plata Naxi al mercat</div><div class="plan-sub" contenteditable="false">Artesania única de la minoria Naxi — peces molt especials</div></div></li>
+      </ul>
+    </div>
+    <div class="city-card">
+      <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:1rem">Dali 大理</div>
+      <ul class="plan-list">
+        <li class="plan-item"><span class="plan-icon">🏙</span><div class="plan-text"><div class="plan-title" contenteditable="false">Old Town Bai — menys turístic que Lijiang</div><div class="plan-sub" contenteditable="false">Millors cafès indie i botigues alternatives de tota la zona</div></div></li>
+        <li class="plan-item"><span class="plan-icon">⛰</span><div class="plan-text"><div class="plan-title" contenteditable="false">Cangshan Mountain</div><div class="plan-sub" contenteditable="false">Senderisme amb vistes al llac Erhai — impactant i assequible</div></div></li>
+      </ul>
+    </div>
+    <div class="city-card">
+      <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:1rem">Shangri-La 香格里拉</div>
+      <ul class="plan-list">
+        <li class="plan-item"><span class="plan-icon">🏯</span><div class="plan-text"><div class="plan-title" contenteditable="false">Monestir Ganden Sumtseling</div><div class="plan-sub" contenteditable="false">El Tibet sense anar al Tibet — arquitectura i cultura tibetana impressionants</div></div></li>
+        <li class="plan-item"><span class="plan-icon">🫖</span><div class="plan-text"><div class="plan-title" contenteditable="false">Yak burger i butter tea tibetà</div><div class="plan-sub" contenteditable="false">Gastronomia tibetana única — molt diferent a tot el que haureu provat</div></div></li>
+      </ul>
+    </div>
+  </div>
+  <div class="accom-section" id="accom-yunnan">
+    <div class="accom-header">🏨 Allotjament (3 nits)</div>
+    <div class="accom-fields">
+      <div class="accom-field"><span class="accom-label">Hotel / Airbnb</span><textarea class="accom-input" rows="1" placeholder="Nom de l'allotjament..." data-city="yunnan" data-field="name" oninput="autoResize(this); saveAccom(this)"></textarea></div>
+      <div class="accom-field"><span class="accom-label">Adreça</span><textarea class="accom-input" rows="1" placeholder="Adreça o Google Maps link..." data-city="yunnan" data-field="address" oninput="autoResize(this); saveAccom(this)"></textarea></div>
+      <div class="accom-field"><span class="accom-label">Check-in</span><textarea class="accom-input" rows="1" placeholder="Hora d'entrada..." data-city="yunnan" data-field="checkin" oninput="autoResize(this); saveAccom(this)"></textarea></div>
+      <div class="accom-field"><span class="accom-label">Notes</span><textarea class="accom-input" rows="2" placeholder="Codi de la porta, wifi, aparcament..." data-city="yunnan" data-field="notes" oninput="autoResize(this); saveAccom(this)"></textarea></div>
+    </div>
+    <div class="accom-saved" id="saved-yunnan">✓ Desat</div>
+  </div>
+</div>
+
+<div id="chengdu" class="city-section">
+  <div class="section-label">26–28 jul</div>
+  <div class="city-heading"><h2>Chengdu</h2><span class="city-zh">成都</span></div>
+  <div class="cities-grid" style="grid-template-columns:1fr">
+    <div class="city-card">
+      <ul class="plan-list">
+        <li class="plan-item"><span class="plan-icon">🐼</span><div class="plan-text"><div class="plan-title" contenteditable="false">Giant Panda Breeding Center</div><div class="plan-sub" contenteditable="false">Aneu a les 8am quan juguen — màxim 2h, reserveu online amb antelació</div></div></li>
+        <li class="plan-item"><span class="plan-icon">🌶</span><div class="plan-text"><div class="plan-title" contenteditable="false">Hot pot de Sichuan al Huangcheng Laoma</div><div class="plan-sub" contenteditable="false">El millor hot pot del món — brou de 24h, picant extrem, absolutament imprescindible</div></div></li>
+        <li class="plan-item"><span class="plan-icon">🏗</span><div class="plan-text"><div class="plan-title" contenteditable="false">Taikoo Li i Chengdu IFS — arquitectura futurista</div><div class="plan-sub" contenteditable="false">Mall futurista amb el panda gegant a la façana, botigues de nicho i disseny</div></div></li>
+        <li class="plan-item"><span class="plan-icon">🎧</span><div class="plan-text"><div class="plan-title" contenteditable="false">TAG Music Park i Club D-22</div><div class="plan-sub" contenteditable="false">Techno i música experimental underground — escena de club de primer nivell</div></div></li>
+        <li class="plan-item"><span class="plan-icon">🍺</span><div class="plan-text"><div class="plan-title" contenteditable="false">Barri de Yulin de nit</div><div class="plan-sub" contenteditable="false">Bars de karaoke, barberina de carrer, cervesa a 2€ — on van els locals</div></div></li>
+      </ul>
+      <div class="city-tip" contenteditable="false">💡 Chengdu té l'escena nocturna més emocionant fora de Shanghai i Pequín. El barri de Yulin és el secret local — no surt als guies.</div>
+    </div>
+  </div>
+  <div class="accom-section" id="accom-chengdu">
+    <div class="accom-header">🏨 Allotjament (3 nits)</div>
+    <div class="accom-fields">
+      <div class="accom-field"><span class="accom-label">Hotel / Airbnb</span><textarea class="accom-input" rows="1" placeholder="Nom de l'allotjament..." data-city="chengdu" data-field="name" oninput="autoResize(this); saveAccom(this)"></textarea></div>
+      <div class="accom-field"><span class="accom-label">Adreça</span><textarea class="accom-input" rows="1" placeholder="Adreça o Google Maps link..." data-city="chengdu" data-field="address" oninput="autoResize(this); saveAccom(this)"></textarea></div>
+      <div class="accom-field"><span class="accom-label">Check-in</span><textarea class="accom-input" rows="1" placeholder="Hora d'entrada..." data-city="chengdu" data-field="checkin" oninput="autoResize(this); saveAccom(this)"></textarea></div>
+      <div class="accom-field"><span class="accom-label">Notes</span><textarea class="accom-input" rows="2" placeholder="Codi de la porta, wifi, aparcament..." data-city="chengdu" data-field="notes" oninput="autoResize(this); saveAccom(this)"></textarea></div>
+    </div>
+    <div class="accom-saved" id="saved-chengdu">✓ Desat</div>
+  </div>
+</div>
+
+<div id="chongqing" class="city-section">
+  <div class="section-label">29–31 jul</div>
+  <div class="city-heading"><h2>Chongqing</h2><span class="city-zh">重庆</span></div>
+  <div class="cities-grid" style="grid-template-columns:1fr">
+    <div class="city-card">
+      <ul class="plan-list">
+        <li class="plan-item"><span class="plan-icon">🌆</span><div class="plan-text"><div class="plan-title" contenteditable="false">Skyline de nit des del mirador Nanshan</div><div class="plan-sub" contenteditable="false">La megalòpolis més fotogràfica del món — 32 milions d'habitants, ponts i boira</div></div></li>
+        <li class="plan-item"><span class="plan-icon">🚇</span><div class="plan-text"><div class="plan-title" contenteditable="false">Metro línea 2 — el metro que travessa un edifici</div><div class="plan-sub" contenteditable="false">La parada Liziba és literalment dins d'un bloc d'apartaments de 19 pisos</div></div></li>
+        <li class="plan-item"><span class="plan-icon">🏛</span><div class="plan-text"><div class="plan-title" contenteditable="false">Hongya Cave i Chaotianmen</div><div class="plan-sub" contenteditable="false">Edificis suspesos en penya-segats sobre el riu — sci-fi real, absolutament únic</div></div></li>
+        <li class="plan-item"><span class="plan-icon">🔥</span><div class="plan-text"><div class="plan-title" contenteditable="false">Hot pot de Chongqing — l'original</div><div class="plan-sub" contenteditable="false">Dezhuang o Liu Yi Shou, brou negre de 24h — aquí és on es va inventar</div></div></li>
+        <li class="plan-item"><span class="plan-icon">🌉</span><div class="plan-text"><div class="plan-title" contenteditable="false">Nanbin Road — bars al riu amb vista skyline</div><div class="plan-sub" contenteditable="false">Rooftops i terrasses amb les vistes més espectaculars de la nit</div></div></li>
+      </ul>
+      <div class="city-tip" contenteditable="false">💡 Chongqing sembla un set de pel·lícula cyberpunk. Perdeu-vos sense mapa: escales que no saben on van, boira constant, neó i menjar a cada cantonada.</div>
+    </div>
+  </div>
+  <div class="accom-section" id="accom-chongqing">
+    <div class="accom-header">🏨 Allotjament (3 nits)</div>
+    <div class="accom-fields">
+      <div class="accom-field"><span class="accom-label">Hotel / Airbnb</span><textarea class="accom-input" rows="1" placeholder="Nom de l'allotjament..." data-city="chongqing" data-field="name" oninput="autoResize(this); saveAccom(this)"></textarea></div>
+      <div class="accom-field"><span class="accom-label">Adreça</span><textarea class="accom-input" rows="1" placeholder="Adreça o Google Maps link..." data-city="chongqing" data-field="address" oninput="autoResize(this); saveAccom(this)"></textarea></div>
+      <div class="accom-field"><span class="accom-label">Check-in</span><textarea class="accom-input" rows="1" placeholder="Hora d'entrada..." data-city="chongqing" data-field="checkin" oninput="autoResize(this); saveAccom(this)"></textarea></div>
+      <div class="accom-field"><span class="accom-label">Notes</span><textarea class="accom-input" rows="2" placeholder="Codi de la porta, wifi, aparcament..." data-city="chongqing" data-field="notes" oninput="autoResize(this); saveAccom(this)"></textarea></div>
+    </div>
+    <div class="accom-saved" id="saved-chongqing">✓ Desat</div>
+  </div>
+</div>
+
+<div id="shanghai" class="city-section">
+  <div class="section-label">1–3 ago</div>
+  <div class="city-heading"><h2>Shanghai</h2><span class="city-zh">上海</span></div>
+  <div class="cities-grid">
+    <div class="city-card">
+      <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:1rem">Nit / Clubs</div>
+      <ul class="plan-list">
+        <li class="plan-item"><span class="plan-icon">🎧</span><div class="plan-text"><div class="plan-title" contenteditable="false">Elevator, Shelter o Arkham</div><div class="plan-sub" contenteditable="false">Escena de club de classe mundial, open format fins les 8am</div></div></li>
+        <li class="plan-item"><span class="plan-icon">🎵</span><div class="plan-text"><div class="plan-title" contenteditable="false">FOUND 158 — food & bar complex underground</div><div class="plan-sub" contenteditable="false">Carreró cobert amb bars internacionals, música i molts locals</div></div></li>
+      </ul>
+    </div>
+    <div class="city-card">
+      <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:1rem">Art / Moda</div>
+      <ul class="plan-list">
+        <li class="plan-item"><span class="plan-icon">🏭</span><div class="plan-text"><div class="plan-title" contenteditable="false">M50 Creative Park</div><div class="plan-sub" contenteditable="false">50+ galeries d'art contemporani en fàbriques — escena emergent real</div></div></li>
+        <li class="plan-item"><span class="plan-icon">🛍</span><div class="plan-text"><div class="plan-title" contenteditable="false">Tianzifang — dissenyadors locals independents</div><div class="plan-sub" contenteditable="false">Botigues de dissenyadors xinesos, estil Shanghai contemporary</div></div></li>
+        <li class="plan-item"><span class="plan-icon">☕</span><div class="plan-text"><div class="plan-title" contenteditable="false">MANNER Coffee i cafès indie de Jing'An</div><div class="plan-sub" contenteditable="false">La millor escena de cafès especialitat de tota Àsia</div></div></li>
+      </ul>
+    </div>
+    <div class="city-card">
+      <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:1rem">Imprescindibles</div>
+      <ul class="plan-list">
+        <li class="plan-item"><span class="plan-icon">🌉</span><div class="plan-text"><div class="plan-title" contenteditable="false">The Bund de nit + Lujiazui</div><div class="plan-sub" contenteditable="false">El skyline futurista definitiu — millor a les 2am sense gent</div></div></li>
+        <li class="plan-item"><span class="plan-icon">🥟</span><div class="plan-text"><div class="plan-title" contenteditable="false">Xiaolongbao al Din Tai Fung</div><div class="plan-sub" contenteditable="false">Els millors dumplings de sopa del món — feu cua, val molt la pena</div></div></li>
+      </ul>
+    </div>
+  </div>
+  <div class="accom-section" id="accom-shanghai">
+    <div class="accom-header">🏨 Allotjament (3 nits)</div>
+    <div class="accom-fields">
+      <div class="accom-field"><span class="accom-label">Hotel / Airbnb</span><textarea class="accom-input" rows="1" placeholder="Nom de l'allotjament..." data-city="shanghai" data-field="name" oninput="autoResize(this); saveAccom(this)"></textarea></div>
+      <div class="accom-field"><span class="accom-label">Adreça</span><textarea class="accom-input" rows="1" placeholder="Adreça o Google Maps link..." data-city="shanghai" data-field="address" oninput="autoResize(this); saveAccom(this)"></textarea></div>
+      <div class="accom-field"><span class="accom-label">Check-in</span><textarea class="accom-input" rows="1" placeholder="Hora d'entrada..." data-city="shanghai" data-field="checkin" oninput="autoResize(this); saveAccom(this)"></textarea></div>
+      <div class="accom-field"><span class="accom-label">Notes</span><textarea class="accom-input" rows="2" placeholder="Codi de la porta, wifi, aparcament..." data-city="shanghai" data-field="notes" oninput="autoResize(this); saveAccom(this)"></textarea></div>
+    </div>
+    <div class="accom-saved" id="saved-shanghai">✓ Desat</div>
+  </div>
+</div>
+
+<!-- TIPS -->
+<section id="tips">
+  <div class="section-label">Essencial</div>
+  <h2>Consells pràctics</h2>
+  <div class="tips-grid">
+    <div class="tip-card"><span class="tip-emoji">📱</span><div class="tip-title" contenteditable="false">Apps imprescindibles</div><div class="tip-body" contenteditable="false">WeChat (obligatòria per a tot), Dianping (Yelp xinès), DiDi (taxi), Alipay (pagaments), SmartShanghai (clubs i events).</div></div>
+    <div class="tip-card"><span class="tip-emoji">💳</span><div class="tip-title" contenteditable="false">Pagaments</div><div class="tip-body" contenteditable="false">WeChat Pay o Alipay per a absolutament tot. L'efectiu s'usa cada cop menys. Configureu-ho ABANS de sortir de casa.</div></div>
+    <div class="tip-card"><span class="tip-emoji">🌐</span><div class="tip-title" contenteditable="false">VPN</div><div class="tip-body" contenteditable="false">Google, Instagram, WhatsApp estan bloquejats. Contracteu un VPN fiable (ExpressVPN o NordVPN) abans de sortir de casa.</div></div>
+    <div class="tip-card"><span class="tip-emoji">🌡</span><div class="tip-title" contenteditable="false">Clima a juliol</div><div class="tip-body" contenteditable="false">Calor i humitat intensa a les ciutats. Muntanyes (Shangri-La, Longji) = respir. Activitats físiques al matí, interiors al migdia.</div></div>
+    <div class="tip-card"><span class="tip-emoji">👟</span><div class="tip-title" contenteditable="false">Moda indie local</div><div class="tip-body" contenteditable="false">Marques: SHUSHU/TONG, Attempt, Randomevent, Staffonly. Millors barris: Tianzifang (Shanghai), Wenlin Jie (Kunming), Taikoo Li (Chengdu).</div></div>
+    <div class="tip-card"><span class="tip-emoji">🎧</span><div class="tip-title" contenteditable="false">Escena techno</div><div class="tip-body" contenteditable="false">Ranking: Shanghai > Chengdu > Guangzhou. A Yangshuo i Lijiang l'ambient és bar social — perfecte per socialitzar però no club pròpiament.</div></div>
+    <div class="tip-card"><span class="tip-emoji">🚄</span><div class="tip-title" contenteditable="false">Transports</div><div class="tip-body" contenteditable="false">Tren d'alta velocitat entre ciutats principals (Chengdu→Chongqing: 1h!). Vols domèstics per als salts llargs. DiDi per dins de les ciutats.</div></div>
+    <div class="tip-card"><span class="tip-emoji">🍜</span><div class="tip-title" contenteditable="false">Gastronomia</div><div class="tip-body" contenteditable="false">Cantonès (GZ), Miao (Kaili), bolets Yunnan, hot pot Sichuan, tibetà (Shangri-La), xiaolongbao (Shanghai). Cada zona és un món diferent.</div></div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div class="footer-title">China 2025 🇨🇳</div>
+    <div class="footer-sub">17 juliol → 4 agost · 6 persones · 9 ciutats</div>
+  </div>
+  <button class="share-btn" onclick="copyLink()">📋 Copia l'enllaç</button>
+</footer>
+
+<!-- EDIT TOGGLE BUTTON -->
+<button class="edit-toggle" id="editToggle" onclick="toggleEdit()" title="Activar edició">✏️</button>
+
+<script>
+// ─── STORAGE KEY ───────────────────────────────────────────────────────────
+const STORE_KEY = 'china2025_trip';
+
+// ─── LOAD / SAVE via localStorage (shared across same origin / file) ────────
+function getData() {
+  try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; } catch { return {}; }
+}
+function setData(d) {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(d)); } catch {}
+}
+
+// ─── ACCOMMODATION ──────────────────────────────────────────────────────────
+function saveAccom(el) {
+  const city = el.dataset.city, field = el.dataset.field;
+  const d = getData();
+  if (!d.accom) d.accom = {};
+  if (!d.accom[city]) d.accom[city] = {};
+  d.accom[city][field] = el.value;
+  setData(d);
+  const badge = document.getElementById('saved-' + city);
+  if (badge) { badge.classList.add('show'); clearTimeout(badge._t); badge._t = setTimeout(() => badge.classList.remove('show'), 1800); }
+}
+
+function loadAccom() {
+  const d = getData();
+  if (!d.accom) return;
+  document.querySelectorAll('.accom-input').forEach(el => {
+    const val = (d.accom[el.dataset.city] || {})[el.dataset.field] || '';
+    el.value = val;
+    autoResize(el);
+  });
+}
+
+// ─── INLINE EDIT ────────────────────────────────────────────────────────────
+let editMode = false;
+let saveTimer = null;
+
+function toggleEdit() {
+  editMode = !editMode;
+  document.body.classList.toggle('editing', editMode);
+  document.querySelectorAll('[contenteditable]').forEach(el => {
+    el.contentEditable = editMode ? 'true' : 'false';
+  });
+  const btn = document.getElementById('editToggle');
+  const banner = document.getElementById('editBanner');
+  btn.classList.toggle('active', editMode);
+  btn.textContent = editMode ? '✓' : '✏️';
+  banner.classList.toggle('visible', editMode);
+  if (!editMode) saveEdits();
+}
+
+function saveEdits() {
+  const d = getData();
+  if (!d.edits) d.edits = {};
+  document.querySelectorAll('[contenteditable]').forEach((el, i) => {
+    const key = el.dataset.editKey || (el.dataset.editKey = 'el_' + i);
+    d.edits[key] = el.innerHTML;
+  });
+  setData(d);
+}
+
+function loadEdits() {
+  const d = getData();
+  if (!d.edits) return;
+  document.querySelectorAll('[contenteditable]').forEach((el, i) => {
+    const key = el.dataset.editKey || (el.dataset.editKey = 'el_' + i);
+    if (d.edits[key] !== undefined) el.innerHTML = d.edits[key];
+  });
+}
+
+// auto-save while typing
+document.addEventListener('input', e => {
+  if (e.target.hasAttribute('contenteditable') && editMode) {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(saveEdits, 800);
+  }
+});
+
+// ─── TEXTAREA AUTO-RESIZE ────────────────────────────────────────────────────
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = el.scrollHeight + 'px';
+}
+
+// ─── SHARE ──────────────────────────────────────────────────────────────────
+function copyLink() {
+  navigator.clipboard.writeText(window.location.href).then(() => {
+    const btn = document.querySelector('.share-btn');
+    btn.textContent = '✅ Copiat!';
+    setTimeout(() => { btn.innerHTML = '📋 Copia l\'enllaç'; }, 2000);
+  });
+}
+
+// ─── NAV HIGHLIGHT ───────────────────────────────────────────────────────────
+const navItems = document.querySelectorAll('.nav-item');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navItems.forEach(item => item.classList.toggle('active', item.getAttribute('href') === '#' + entry.target.id));
+    }
+  });
+}, { threshold: 0.2 });
+document.querySelectorAll('[id]').forEach(el => observer.observe(el));
+
+// ─── INIT ─────────────────────────────────────────────────────────────────
+// Assign edit keys before loading
+document.querySelectorAll('[contenteditable]').forEach((el, i) => { el.dataset.editKey = 'el_' + i; });
+loadEdits();
+loadAccom();
+</script>
+</body>
+</html>
